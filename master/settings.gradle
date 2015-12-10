@@ -1,1 +1,3 @@
 includeFlat 'fragments-core'
+
+includeFlat 'fragments-store-memory'
