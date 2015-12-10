@@ -21,7 +21,7 @@ public interface FragmentManager {
 	 * @param id
 	 * @return
 	 */
-	Fragment get(int id);
+	Fragment get(long id);
 
 	/**
 	 * <p>
@@ -56,7 +56,7 @@ public interface FragmentManager {
 	 * @throws IllegalArgumentException
 	 *             If no fragment with the specified ID exists
 	 */
-	Fragment delete(int id);
+	Fragment delete(long id);
 
 	/**
 	 * <p>
