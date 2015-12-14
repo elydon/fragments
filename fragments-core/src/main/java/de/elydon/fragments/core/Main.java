@@ -40,6 +40,9 @@ public class Main {
 			
 			final Application application = (Application) applicationClass.newInstance();
 			final Thread applicationThread = application.setup();
+			if (applicationThread == null) {
+				throw new IllegalStateException("Thread of the application is null");
+			}
 			
 			if (!applicationThread.isAlive()) {
 				applicationThread.start();
