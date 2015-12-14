@@ -1,5 +1,5 @@
 version = '1.0.0'
 
 dependencies {
-	project(':fragments-core')
+	compile project(':fragments-core')
 }
