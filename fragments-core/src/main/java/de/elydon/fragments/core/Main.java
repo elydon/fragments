@@ -48,6 +48,9 @@ public class Main {
 		} catch (final ClassNotFoundException | InstantiationException | IllegalAccessException e) {
 			e.printStackTrace();
 		} catch (final InterruptedException e) {
+		} catch (Exception e) {
+			System.err.println("Setting up the application failed");
+			e.printStackTrace();
 		}
 	}
 }

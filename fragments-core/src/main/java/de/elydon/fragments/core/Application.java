@@ -23,8 +23,10 @@ public interface Application {
 	 * </p>
 	 * 
 	 * @return Returns the {@link Thread} in which the application will run
+	 * @throws Exception
+	 *             If setting up fails
 	 */
-	Thread setup();
+	Thread setup() throws Exception;
 
 	/**
 	 * <p>
