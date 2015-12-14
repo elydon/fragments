@@ -33,7 +33,7 @@ public class Main {
 		final String applicationClassName = args[0];
 		try {
 			final Class<?> applicationClass = Class.forName(applicationClassName);
-			if (!applicationClass.isAssignableFrom(Application.class)) {
+			if (!Application.class.isAssignableFrom(applicationClass)) {
 				System.out.println(applicationClassName + " does not implement " + Application.class.getCanonicalName());
 				System.exit(0);
 			}
