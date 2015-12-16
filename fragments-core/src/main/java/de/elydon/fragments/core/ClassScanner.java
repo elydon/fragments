@@ -39,8 +39,9 @@ public class ClassScanner {
 								System.out.println("    added " + classname);
 								classes.add(clazz);
 							}
-						} catch (final ClassNotFoundException e) {
-							System.err.println(classname + " could not be loaded from resource " + file);
+						} catch (final NoClassDefFoundError | ClassNotFoundException e) {
+							System.err.println(
+									classname + " could not be loaded from [" + file + "], reason: " + e.getMessage());
 						}
 					} else if (file.toString().endsWith(".jar")) {
 						System.out.println("  scanning JAR file " + file);
@@ -61,9 +62,9 @@ public class ClassScanner {
 												System.out.println("    added " + classname);
 												classes.add(clazz);
 											}
-										} catch (final ClassNotFoundException e) {
-											System.err
-													.println(classname + " could not be loaded from resource " + file);
+										} catch (final NoClassDefFoundError | ClassNotFoundException e) {
+											System.err.println(classname + " could not be loaded from [" + file
+													+ "], reason: " + e.getMessage());
 										}
 									}
 								}
