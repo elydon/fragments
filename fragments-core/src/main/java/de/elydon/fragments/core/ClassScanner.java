@@ -3,6 +3,8 @@ package de.elydon.fragments.core;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,7 +22,7 @@ public class ClassScanner {
 
 	public static Set<Class<?>> scan(final ClassLoader classLoader, final ClassFilter filter, final Path root) {
 		final Set<Class<?>> classes = new HashSet<>();
-		
+
 		System.out.println("scanning " + root);
 		try {
 			Files.walkFileTree(root, new SimpleFileVisitor<Path>() {
@@ -28,7 +30,8 @@ public class ClassScanner {
 				public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException {
 					if (file.toString().endsWith(".class")) {
 						System.out.println("  scanning file " + file);
-						String classname = file.toString().replace(root.toString() + File.separator, "").replace(File.separator, ".");
+						String classname = file.toString().replace(root.toString() + File.separator, "")
+								.replace(File.separator, ".");
 						classname = classname.substring(0, classname.length() - ".class".length());
 						try {
 							final Class<?> clazz = classLoader.loadClass(classname);
@@ -41,22 +44,29 @@ public class ClassScanner {
 						}
 					} else if (file.toString().endsWith(".jar")) {
 						System.out.println("  scanning JAR file " + file);
-						try (final ZipInputStream zip = new ZipInputStream(new FileInputStream(file.toFile()))) {
-							for (ZipEntry entry = zip.getNextEntry(); entry != null; entry = zip.getNextEntry()) {
-							    if (!entry.isDirectory() && entry.getName().endsWith(".class")) {
-							    	// extract class name
-							        String classname = entry.getName().replace('/', '.');
-							        classname = classname.substring(0, classname.length() - ".class".length());
-							        try {
-										final Class<?> clazz = classLoader.loadClass(classname);
-										if (filter.accepts(clazz)) {
-											System.out.println("    added " + classname);
-											classes.add(clazz);
+						// construct class loader for the JAR file
+						try (final URLClassLoader jarClassLoader = new URLClassLoader(
+								new URL[] { file.toUri().toURL() }, classLoader)) {
+
+							// loop through the JAR file's entries
+							try (final ZipInputStream zip = new ZipInputStream(new FileInputStream(file.toFile()))) {
+								for (ZipEntry entry = zip.getNextEntry(); entry != null; entry = zip.getNextEntry()) {
+									if (!entry.isDirectory() && entry.getName().endsWith(".class")) {
+										// extract class name
+										String classname = entry.getName().replace('/', '.');
+										classname = classname.substring(0, classname.length() - ".class".length());
+										try {
+											final Class<?> clazz = jarClassLoader.loadClass(classname);
+											if (filter.accepts(clazz)) {
+												System.out.println("    added " + classname);
+												classes.add(clazz);
+											}
+										} catch (final ClassNotFoundException e) {
+											System.err
+													.println(classname + " could not be loaded from resource " + file);
 										}
-									} catch (final ClassNotFoundException e) {
-										System.err.println(classname + " could not be loaded from resource " + file);
 									}
-							    }
+								}
 							}
 						}
 					}
@@ -66,7 +76,7 @@ public class ClassScanner {
 		} catch (final IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		return classes;
 	}
 }
