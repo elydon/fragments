@@ -1,0 +1,16 @@
+version = '1.0.0-SNAPSHOT'
+
+dependencies {
+	compile project(':fragments-core')
+	
+	compile 'org.apache.tomcat.embed:tomcat-embed-core:8.0.30'
+	compile 'org.apache.tomcat.embed:tomcat-embed-logging-juli:8.0.30'
+	compile 'org.apache.tomcat.embed:tomcat-embed-jasper:8.0.30'
+	compile 'javax.mail:javax.mail-api:1.5.4'
+}
+
+task fatJar(type: Jar) {
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
