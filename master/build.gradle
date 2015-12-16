@@ -5,6 +5,7 @@ subprojects {
 		mavenCentral()
 	}
 	
-	group = 'de.kuehne-welt'
+	group = 'de.elydon'
 	sourceCompatibility = 1.8
+	targetCompatibility = 1.8
 }
