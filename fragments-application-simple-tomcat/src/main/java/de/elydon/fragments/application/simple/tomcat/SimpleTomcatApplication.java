@@ -25,6 +25,8 @@ public class SimpleTomcatApplication extends SimpleApplication {
 
 	@Override
 	public Thread setup() throws Exception {
+		setupFragmentManager(getClass().getClassLoader());
+		
 		final TomcatRunnable runnable = new TomcatRunnable();
 		final Thread tomcatThread = new Thread(runnable);
 

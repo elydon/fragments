@@ -1,9 +1,12 @@
 package de.elydon.fragments.core;
 
 import java.lang.reflect.Field;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import de.elydon.fragments.core.Application;
@@ -14,8 +17,8 @@ import de.elydon.fragments.core.Application;
  * running system.
  * </p>
  * <p>
- * This is an abstract class that offers the necessary methods to
- * manage the object sources and injections.
+ * This is an abstract class that offers the necessary methods to manage the
+ * object sources and injections.
  * </p>
  * 
  * @author elydon
@@ -24,6 +27,43 @@ import de.elydon.fragments.core.Application;
 public abstract class SimpleApplication implements Application {
 
 	private final Map<Class<?>, Supplier<?>> suppliers = new HashMap<>();
+
+	/**
+	 * <p>
+	 * Searches for a implementation of {@link FragmentManager}, instantiates
+	 * it, and {@link #addObjectSource(Class, Supplier) adds} it to this
+	 * application.
+	 * </p>
+	 * 
+	 * @param classLoader
+	 *            The {@link ClassLoader} to use for scanning for the
+	 *            implementation of {@link FragmentManager}
+	 * @throws IllegalStateException
+	 *             If not exactly one implementation is found, or it cannot be
+	 *             instantiated
+	 */
+	protected void setupFragmentManager(final ClassLoader classLoader) {
+		try {
+			final Set<Class<?>> fragmentManagerClasses = ClassScanner.scan(classLoader,
+					new ImplementingClassFilter(FragmentManager.class),
+					Paths.get(classLoader.getResource(".").toURI()));
+			if (fragmentManagerClasses.isEmpty()) {
+				throw new IllegalStateException(
+						"Found no class implementing " + FragmentManager.class.getCanonicalName());
+			}
+			if (fragmentManagerClasses.size() != 1) {
+				throw new IllegalStateException("Found " + fragmentManagerClasses.size() + " classes implementing "
+						+ FragmentManager.class.getCanonicalName());
+			}
+			
+			final FragmentManager fragmentManager = (FragmentManager) fragmentManagerClasses.iterator().next().newInstance();
+			addObjectSource(FragmentManager.class, () -> fragmentManager);
+		} catch (final URISyntaxException e) {
+			throw new IllegalStateException("Unable to scan for " + FragmentManager.class.getCanonicalName(), e);
+		} catch (final IllegalAccessException | InstantiationException e) {
+			throw new IllegalStateException("Unable to instantiate an object for " + FragmentManager.class.getCanonicalName(), e);
+		}
+	}
 
 	@Override
 	public <T> void addObjectSource(final Class<T> clazz, final Supplier<T> supplier) {
