@@ -50,7 +50,8 @@ public class TomcatRunnable implements Runnable {
 	}
 
 	private void deployWARs() throws IOException {
-		Files.walkFileTree(Paths.get("."), new FileVisitor<Path>() {
+		final Path root = Paths.get(".");
+		Files.walkFileTree(root, new FileVisitor<Path>() {
 
 			@Override
 			public FileVisitResult postVisitDirectory(final Path dir, final IOException exc) throws IOException {
@@ -60,6 +61,10 @@ public class TomcatRunnable implements Runnable {
 			@Override
 			public FileVisitResult preVisitDirectory(final Path dir, final BasicFileAttributes attrs)
 					throws IOException {
+				if (dir.equals(root)) {
+					return FileVisitResult.CONTINUE;
+				}
+				
 				// not scanning recursively
 				return FileVisitResult.SKIP_SUBTREE;
 			}
