@@ -78,6 +78,7 @@ public class TomcatRunnable implements Runnable {
 					webappName = webappName.substring(0, webappName.length() - ".war".length());
 
 					try {
+						System.out.println("deploying " + webappName);
 						tomcat.addWebapp("/" + webappName, file.toString());
 					} catch (final ServletException e) {
 						System.err.println("Unable to deploy [" + file + "], reason: " + e.getMessage());
