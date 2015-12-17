@@ -2,14 +2,12 @@ package de.elydon.fragments.core;
 
 import java.lang.reflect.Field;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Supplier;
-
-import de.elydon.fragments.core.Application;
 
 /**
  * <p>
@@ -44,7 +42,7 @@ public abstract class SimpleApplication implements Application {
 	 */
 	protected void setupFragmentManager(final ClassLoader classLoader) {
 		try {
-			final Set<Class<?>> fragmentManagerClasses = ClassScanner.scan(classLoader,
+			final Map<Class<?>, URL> fragmentManagerClasses = ClassScanner.scan(classLoader,
 					new ImplementingClassFilter(FragmentManager.class),
 					Paths.get(classLoader.getResource(".").toURI()));
 			if (fragmentManagerClasses.isEmpty()) {
@@ -55,13 +53,15 @@ public abstract class SimpleApplication implements Application {
 				throw new IllegalStateException("Found " + fragmentManagerClasses.size() + " classes implementing "
 						+ FragmentManager.class.getCanonicalName());
 			}
-			
-			final FragmentManager fragmentManager = (FragmentManager) fragmentManagerClasses.iterator().next().newInstance();
+
+			final FragmentManager fragmentManager = (FragmentManager) fragmentManagerClasses.keySet().iterator().next()
+					.newInstance();
 			addObjectSource(FragmentManager.class, () -> fragmentManager);
 		} catch (final URISyntaxException e) {
 			throw new IllegalStateException("Unable to scan for " + FragmentManager.class.getCanonicalName(), e);
 		} catch (final IllegalAccessException | InstantiationException e) {
-			throw new IllegalStateException("Unable to instantiate an object for " + FragmentManager.class.getCanonicalName(), e);
+			throw new IllegalStateException(
+					"Unable to instantiate an object for " + FragmentManager.class.getCanonicalName(), e);
 		}
 	}
 

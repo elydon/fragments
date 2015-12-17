@@ -1,9 +1,12 @@
 package de.elydon.fragments.core;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Set;
+import java.util.Map;
 
 /**
  * <p>
@@ -51,14 +54,14 @@ public class Main {
 			// not initialized :/
 			return;
 		}
-		final Set<Class<?>> applicationClasses = ClassScanner.scan(Main.class.getClassLoader(),
+		final Map<Class<?>, URL> applicationClasses = ClassScanner.scan(Main.class.getClassLoader(),
 				new ImplementingClassFilter(Application.class), classPathRoot);
 		if (applicationClasses.isEmpty()) {
 			System.err.println("Found no class implementing " + Application.class.getCanonicalName());
 			System.exit(1);
 		} else if (applicationClasses.size() != 1) {
 			System.err.println("Found more than one class implementing " + Application.class.getCanonicalName() + ":");
-			for (final Class<?> clazz : applicationClasses) {
+			for (final Class<?> clazz : applicationClasses.keySet()) {
 				System.err.println("  " + clazz.getCanonicalName());
 			}
 			System.err.println("Cannot decide which one to use, exiting");
@@ -66,7 +69,7 @@ public class Main {
 		}
 
 		try {
-			application = (Application) applicationClasses.iterator().next().newInstance();
+			application = (Application) applicationClasses.keySet().iterator().next().newInstance();
 			final Thread applicationThread = application.setup();
 			if (applicationThread == null) {
 				throw new IllegalStateException("Thread of the application is null");

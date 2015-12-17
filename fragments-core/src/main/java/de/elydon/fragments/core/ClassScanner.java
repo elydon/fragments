@@ -10,8 +10,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -20,8 +20,8 @@ public class ClassScanner {
 	private ClassScanner() {
 	}
 
-	public static Set<Class<?>> scan(final ClassLoader classLoader, final ClassFilter filter, final Path root) {
-		final Set<Class<?>> classes = new HashSet<>();
+	public static Map<Class<?>, URL> scan(final ClassLoader classLoader, final ClassFilter filter, final Path root) {
+		final Map<Class<?>, URL> classes = new HashMap<>();
 
 		System.out.println("scanning " + root);
 		try {
@@ -37,7 +37,7 @@ public class ClassScanner {
 							final Class<?> clazz = classLoader.loadClass(classname);
 							if (filter.accepts(clazz)) {
 								System.out.println("    added " + classname);
-								classes.add(clazz);
+								classes.put(clazz, null);
 							}
 						} catch (final NoClassDefFoundError | ClassNotFoundException e) {
 							System.err.println(
@@ -46,8 +46,9 @@ public class ClassScanner {
 					} else if (file.toString().endsWith(".jar")) {
 						System.out.println("  scanning JAR file " + file);
 						// construct class loader for the JAR file
+						final URL url = file.toUri().toURL();
 						try (final URLClassLoader jarClassLoader = new URLClassLoader(
-								new URL[] { file.toUri().toURL() }, classLoader)) {
+								new URL[] { url }, classLoader)) {
 
 							// loop through the JAR file's entries
 							try (final ZipInputStream zip = new ZipInputStream(new FileInputStream(file.toFile()))) {
@@ -60,7 +61,7 @@ public class ClassScanner {
 											final Class<?> clazz = jarClassLoader.loadClass(classname);
 											if (filter.accepts(clazz)) {
 												System.out.println("    added " + classname);
-												classes.add(clazz);
+												classes.put(clazz, url);
 											}
 										} catch (final NoClassDefFoundError | ClassNotFoundException e) {
 											System.err.println(classname + " could not be loaded from [" + file
