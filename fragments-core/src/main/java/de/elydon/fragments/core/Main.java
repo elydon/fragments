@@ -41,6 +41,7 @@ public class Main {
 
 	private static Application application;
 
+	@SuppressWarnings("unchecked")
 	public static void main(final String[] args) {
 		// scan for classes implementing Application, starting at current class
 		// loader's root
@@ -67,9 +68,32 @@ public class Main {
 			System.err.println("Cannot decide which one to use, exiting");
 			System.exit(1);
 		}
+		
+		// construct proper class loader to load the application class
+		// this is necessary, as they probably want to load other stuff from the class path
+		ClassLoader classLoader = Main.class.getClassLoader();
+		URL url = null;
+		Class<Application> applicationClass = null;
+		for (final Map.Entry<Class<?>, URL> entry : applicationClasses.entrySet()) {
+			applicationClass = (Class<Application>) entry.getKey();
+			url = entry.getValue();
+			// no break necessary, we only have one value, see if statements above
+		}
+		if (url != null) {
+			classLoader = new URLClassLoader(new URL[] { url }, classLoader);
+			
+			// we have to reload the class with the "right" class loader, otherwise the
+			// class loader of the Main class will be used
+			try {
+				applicationClass = (Class<Application>) classLoader.loadClass(applicationClass.getCanonicalName());
+			} catch (final ClassNotFoundException e) {
+				// may not happen ... really
+				e.printStackTrace();
+			}
+		}
 
 		try {
-			application = (Application) applicationClasses.keySet().iterator().next().newInstance();
+			application = applicationClass.newInstance();
 			final Thread applicationThread = application.setup();
 			if (applicationThread == null) {
 				throw new IllegalStateException("Thread of the application is null");
@@ -87,6 +111,15 @@ public class Main {
 			System.err.println("Setting up the application failed");
 			e.printStackTrace();
 			System.exit(1);
+		} finally {
+			// remember to close the URLClassLoader, if used
+			if (classLoader instanceof URLClassLoader) {
+				try {
+					((URLClassLoader) classLoader).close();
+				} catch (final IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 
