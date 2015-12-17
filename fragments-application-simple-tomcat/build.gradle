@@ -9,8 +9,8 @@ dependencies {
 	compile 'javax.mail:javax.mail-api:1.5.4'
 }
 
-task fatJar(type: Jar) {
-    baseName = project.name + '-all'
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    with jar
+jar {
+    from {
+    	configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
