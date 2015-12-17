@@ -72,14 +72,15 @@ public class TomcatRunnable implements Runnable {
 			@Override
 			public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException {
 				// is it a WAR archive?
-				if (file.toString().endsWith(".war")) {
+				String filename = file.toAbsolutePath().normalize().toString();
+				if (filename.endsWith(".war")) {
 					// extract webapp name
 					String webappName = file.getFileName().toString();
 					webappName = webappName.substring(0, webappName.length() - ".war".length());
 
 					try {
-						System.out.println("deploying " + webappName);
-						tomcat.addWebapp("/" + webappName, file.toString());
+						System.out.println("deploying " + webappName + " [" + filename + "]");
+						tomcat.addWebapp("/" + webappName, filename);
 					} catch (final ServletException e) {
 						System.err.println("Unable to deploy [" + file + "], reason: " + e.getMessage());
 					}
