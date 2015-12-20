@@ -99,15 +99,18 @@ public class Main {
 				throw new IllegalStateException("Thread of the application is null");
 			}
 
+			// start thread if not already running
 			if (!applicationThread.isAlive()) {
 				applicationThread.start();
 			}
+			
+			// wait until the application thread is dead
 			applicationThread.join();
 		} catch (final ClassNotFoundException | InstantiationException | IllegalAccessException e) {
 			e.printStackTrace();
 			System.exit(1);
 		} catch (final InterruptedException e) {
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			System.err.println("Setting up the application failed");
 			e.printStackTrace();
 			System.exit(1);

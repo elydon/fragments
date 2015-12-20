@@ -10,7 +10,9 @@ import java.nio.file.attribute.BasicFileAttributes;
 
 import javax.servlet.ServletException;
 
+import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
+import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.startup.Tomcat;
 
@@ -31,8 +33,13 @@ public class TomcatRunnable implements Runnable {
 	public void run() {
 		tomcat = new Tomcat();
 
+		// use our class loader as parent, so the web application will be able
+		// to find all the classes we brought with us
+		StandardHost standardHost = (StandardHost) tomcat.getHost();
+		standardHost.setParentClassLoader(this.getClass().getClassLoader());
+
 		// do not unpack the WARs, just run them
-		((StandardHost) tomcat.getHost()).setUnpackWARs(false);
+		standardHost.setUnpackWARs(false);
 
 		// find all WARs and "deploy" them
 		try {
@@ -64,7 +71,7 @@ public class TomcatRunnable implements Runnable {
 				if (dir.equals(root)) {
 					return FileVisitResult.CONTINUE;
 				}
-				
+
 				// not scanning recursively
 				return FileVisitResult.SKIP_SUBTREE;
 			}
@@ -80,7 +87,12 @@ public class TomcatRunnable implements Runnable {
 
 					try {
 						System.out.println("deploying " + webappName + " [" + filename + "]");
-						tomcat.addWebapp("/" + webappName, filename);
+						final Context context = tomcat.addWebapp("/" + webappName, filename);
+
+						// i am not very happy with this, but it seems to be
+						// necessary to not lose our Main class, which holds the
+						// static Application instance.
+						((StandardContext) context).setDelegate(true);
 					} catch (final ServletException e) {
 						System.err.println("Unable to deploy [" + file + "], reason: " + e.getMessage());
 					}
