@@ -3,3 +3,5 @@ includeFlat 'fragments-core'
 includeFlat 'fragments-store-memory'
 
 includeFlat 'fragments-application-simple-tomcat'
+
+includeFlat 'fragments-webservice-tomcat'
