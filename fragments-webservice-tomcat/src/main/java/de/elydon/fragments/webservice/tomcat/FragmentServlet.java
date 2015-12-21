@@ -1,6 +1,7 @@
 package de.elydon.fragments.webservice.tomcat;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 import javax.servlet.Servlet;
@@ -34,7 +35,9 @@ public class FragmentServlet extends HttpServlet {
 		// fetch the FragmentManager of the system
 		final Application application = Main.getApplication();
 		final FragmentManager fragmentManager = application.get(FragmentManager.class);
+		final PrintWriter writer = resp.getWriter();
 
+		// fetching ID
 		final String idParam = req.getParameter("id");
 		if (idParam != null) {
 			// IE may not be able to handle this .. screw you, IE, learn to be a
@@ -46,21 +49,22 @@ public class FragmentServlet extends HttpServlet {
 				final Fragment fragment = fragmentManager.get(id);
 
 				if (fragment == null) {
-					resp.getWriter().write(JsonUtils.generateError("No fragment found: #" + idParam).toJSONString());
+					writer.write(JsonUtils.generateError("No fragment found: #" + idParam).toJSONString());
 				} else {
-					resp.getWriter().write(JsonUtils.generateResult(JsonUtils.toJson(fragment)).toJSONString());
+					writer.write(JsonUtils.generateResult(JsonUtils.toJson(fragment)).toJSONString());
 				}
 			} catch (final NumberFormatException e) {
-				resp.getWriter().write(JsonUtils.generateError("ID is not valid: " + idParam).toJSONString());
+				writer.write(JsonUtils.generateError("ID is not valid: " + idParam).toJSONString());
 			}
 
 			return;
 		}
 
+		// search request
 		final String search = req.getParameter("search");
 		if (search != null) {
 			final List<Fragment> foundFragments = fragmentManager.search(search);
-			resp.getWriter().write(JsonUtils.generateResult(JsonUtils.toJson(foundFragments)).toJSONString());
+			writer.write(JsonUtils.generateResult(JsonUtils.toJson(foundFragments)).toJSONString());
 		}
 	}
 
