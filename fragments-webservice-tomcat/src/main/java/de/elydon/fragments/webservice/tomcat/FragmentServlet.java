@@ -64,7 +64,11 @@ public class FragmentServlet extends HttpServlet {
 		final String search = req.getParameter("search");
 		if (search != null) {
 			final List<Fragment> foundFragments = fragmentManager.search(search);
+			
+			resp.addHeader("Content-Type", "application/json");
 			writer.write(JsonUtils.generateResult(JsonUtils.toJson(foundFragments)).toJSONString());
+			
+			return;
 		}
 	}
 
