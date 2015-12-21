@@ -3,6 +3,7 @@ package de.elydon.fragments.webservice.tomcat;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.function.Consumer;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
@@ -44,18 +45,9 @@ public class FragmentServlet extends HttpServlet {
 			// browser
 			resp.addHeader("Content-Type", "application/json");
 
-			try {
-				final long id = Long.valueOf(idParam);
-				final Fragment fragment = fragmentManager.get(id);
-
-				if (fragment == null) {
-					writer.write(JsonUtils.generateError("No fragment found: #" + idParam).toJSONString());
-				} else {
-					writer.write(JsonUtils.generateResult(JsonUtils.toJson(fragment)).toJSONString());
-				}
-			} catch (final NumberFormatException e) {
-				writer.write(JsonUtils.generateError("ID is not valid: " + idParam).toJSONString());
-			}
+			handleFragment(fragmentManager, writer, idParam, (fragment) -> {
+				writer.write(JsonUtils.generateResult(JsonUtils.toJson(fragment)).toJSONString());
+			});
 
 			return;
 		}
@@ -64,34 +56,40 @@ public class FragmentServlet extends HttpServlet {
 		final String search = req.getParameter("search");
 		if (search != null) {
 			final List<Fragment> foundFragments = fragmentManager.search(search);
-			
+
 			resp.addHeader("Content-Type", "application/json");
 			writer.write(JsonUtils.generateResult(JsonUtils.toJson(foundFragments)).toJSONString());
-			
+
 			return;
 		}
-		
+
 		// related items
 		final String relatedToParam = req.getParameter("relatedTo");
 		if (relatedToParam != null) {
 			resp.addHeader("Content-Type", "application/json");
 			
-			try {
-				// TODO: refactor to remove code dup (see above)
-				final long id = Long.valueOf(relatedToParam);
-				final Fragment fragment = fragmentManager.get(id);
+			handleFragment(fragmentManager, writer, relatedToParam, (fragment) -> {
+				final List<Fragment> related = fragmentManager.fetchRelated(fragment);
+				writer.write(JsonUtils.generateResult(JsonUtils.toJson(related)).toJSONString());
+			});
 
-				if (fragment == null) {
-					writer.write(JsonUtils.generateError("No fragment found: #" + relatedToParam).toJSONString());
-				} else {
-					final List<Fragment> related = fragmentManager.fetchRelated(fragment);
-					writer.write(JsonUtils.generateResult(JsonUtils.toJson(related)).toJSONString());
-				}
-			} catch (final NumberFormatException e) {
-				writer.write(JsonUtils.generateError("ID is not valid: " + relatedToParam).toJSONString());
-			}
-			
 			return;
+		}
+	}
+
+	private void handleFragment(final FragmentManager fragmentManager, final PrintWriter writer, final String idParam,
+			final Consumer<Fragment> consumer) {
+		try {
+			final long id = Long.valueOf(idParam);
+			final Fragment fragment = fragmentManager.get(id);
+
+			if (fragment == null) {
+				writer.write(JsonUtils.generateError("No fragment found: #" + idParam).toJSONString());
+			} else {
+				consumer.accept(fragment);
+			}
+		} catch (final NumberFormatException e) {
+			writer.write(JsonUtils.generateError("ID is not valid: " + idParam).toJSONString());
 		}
 	}
 
