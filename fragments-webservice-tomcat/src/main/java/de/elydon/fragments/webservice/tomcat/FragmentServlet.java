@@ -47,7 +47,7 @@ public class FragmentServlet extends HttpServlet {
 				if (fragment == null) {
 					resp.getWriter().write(JsonUtils.generateError("No fragment found: #" + idParam).toJSONString());
 				} else {
-					resp.getWriter().write(JsonUtils.toJson(fragment).toJSONString());
+					resp.getWriter().write(JsonUtils.generateResult(JsonUtils.toJson(fragment)).toJSONString());
 				}
 			} catch (final NumberFormatException e) {
 				resp.getWriter().write(JsonUtils.generateError("ID is not valid: " + idParam).toJSONString());

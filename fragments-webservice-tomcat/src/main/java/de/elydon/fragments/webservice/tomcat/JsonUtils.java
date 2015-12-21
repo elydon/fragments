@@ -41,16 +41,47 @@ public final class JsonUtils {
 
 		return result;
 	}
-	
+
+	/**
+	 * <p>
+	 * Generates a {@link JSONObject} that indicates a successful process. If
+	 * the specified object is not {@code null}, it is contained in the JSON
+	 * object.
+	 * </p>
+	 * 
+	 * @param r
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static JSONObject generateResult(final Object r) {
+		final JSONObject result = new JSONObject();
+
+		result.put("status", "okay");
+		if (r != null) {
+			result.put("result", r);
+		}
+
+		return result;
+	}
+
+	/**
+	 * <p>
+	 * Generates a {@link JSONObject} that indicates an error. If the message is
+	 * not {@code null}, the message is contained in the JSON object.
+	 * </p>
+	 * 
+	 * @param message
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public static JSONObject generateError(final String message) {
 		final JSONObject result = new JSONObject();
-		
+
 		result.put("status", "error");
 		if (message != null) {
 			result.put("message", message);
 		}
-		
+
 		return result;
 	}
 }
