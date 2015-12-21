@@ -1,5 +1,8 @@
 package de.elydon.fragments.webservice.tomcat;
 
+import java.util.List;
+
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import de.elydon.fragments.core.Fragment;
@@ -15,6 +18,30 @@ import de.elydon.fragments.core.Fragment;
 public final class JsonUtils {
 
 	private JsonUtils() {
+	}
+
+	/**
+	 * <p>
+	 * Transforms the list of {@link Fragment fragments} into a {@link JSONArray
+	 * JSON array}.
+	 * </p>
+	 * 
+	 * @param fragments
+	 * @return The {@link JSONArray} containing all fragments in the list, or
+	 *         {@code null} if the list was {@code null}
+	 */
+	@SuppressWarnings("unchecked")
+	public static JSONArray toJson(final List<Fragment> fragments) {
+		if (fragments == null) {
+			return null;
+		}
+
+		final JSONArray result = new JSONArray();
+		for (final Fragment fragment : fragments) {
+			result.add(toJson(fragment));
+		}
+
+		return result;
 	}
 
 	/**

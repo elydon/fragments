@@ -1,6 +1,7 @@
 package de.elydon.fragments.webservice.tomcat;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
@@ -54,6 +55,12 @@ public class FragmentServlet extends HttpServlet {
 			}
 
 			return;
+		}
+
+		final String search = req.getParameter("search");
+		if (search != null) {
+			final List<Fragment> foundFragments = fragmentManager.search(search);
+			resp.getWriter().write(JsonUtils.generateResult(JsonUtils.toJson(foundFragments)).toJSONString());
 		}
 	}
 
