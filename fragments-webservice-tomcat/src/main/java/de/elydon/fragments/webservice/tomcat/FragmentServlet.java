@@ -70,6 +70,29 @@ public class FragmentServlet extends HttpServlet {
 			
 			return;
 		}
+		
+		// related items
+		final String relatedToParam = req.getParameter("relatedTo");
+		if (relatedToParam != null) {
+			resp.addHeader("Content-Type", "application/json");
+			
+			try {
+				// TODO: refactor to remove code dup (see above)
+				final long id = Long.valueOf(relatedToParam);
+				final Fragment fragment = fragmentManager.get(id);
+
+				if (fragment == null) {
+					writer.write(JsonUtils.generateError("No fragment found: #" + relatedToParam).toJSONString());
+				} else {
+					final List<Fragment> related = fragmentManager.fetchRelated(fragment);
+					writer.write(JsonUtils.generateResult(JsonUtils.toJson(related)).toJSONString());
+				}
+			} catch (final NumberFormatException e) {
+				writer.write(JsonUtils.generateError("ID is not valid: " + relatedToParam).toJSONString());
+			}
+			
+			return;
+		}
 	}
 
 }
