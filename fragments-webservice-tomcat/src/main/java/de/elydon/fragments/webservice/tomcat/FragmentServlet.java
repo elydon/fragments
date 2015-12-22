@@ -67,7 +67,7 @@ public class FragmentServlet extends HttpServlet {
 		final String relatedToParam = req.getParameter("relatedTo");
 		if (relatedToParam != null) {
 			resp.addHeader("Content-Type", "application/json");
-			
+
 			handleFragment(fragmentManager, writer, relatedToParam, (fragment) -> {
 				final List<Fragment> related = fragmentManager.fetchRelated(fragment);
 				writer.write(JsonUtils.generateResult(JsonUtils.toJson(related)).toJSONString());
@@ -75,12 +75,65 @@ public class FragmentServlet extends HttpServlet {
 
 			return;
 		}
-		
+
 		// all fragments
 		if (req.getParameter("all") != null) {
 			resp.addHeader("Content-Type", "application/json");
 			writer.write(JsonUtils.generateResult(JsonUtils.toJson(fragmentManager.getAll())).toJSONString());
 		}
+
+		// delete fragment
+		final String deleteIdParam = req.getParameter("delete");
+		if (deleteIdParam != null) {
+			resp.addHeader("Content-Type", "application/json");
+
+			try {
+				final long id = Long.valueOf(deleteIdParam);
+				final Fragment deletedFragment = fragmentManager.delete(id);
+
+				writer.write(JsonUtils.generateResult(JsonUtils.toJson(deletedFragment)).toJSONString());
+			} catch (final NumberFormatException e) {
+				writer.write(JsonUtils.generateError("ID is not valid: " + deleteIdParam).toJSONString());
+			} catch (final IllegalArgumentException e) {
+				writer.write(JsonUtils.generateError("There is no fragment #" + deleteIdParam).toJSONString());
+			}
+
+			return;
+		}
+
+		// assuming we want to store a fragment, so check the mandatory parts
+		final String storeId = req.getParameter("storeId");
+		Long id = null;
+		if (storeId != null) {
+			try {
+				id = Long.valueOf(storeId);
+			} catch (final NumberFormatException e) {
+				writer.write(JsonUtils.generateError("ID is not valid: " + storeId).toJSONString());
+				return;
+			}
+		}
+
+		final String text = req.getParameter("text");
+		if (text == null) {
+			writer.write(JsonUtils.generateError("No text given, but is mandatory").toJSONString());
+			return;
+		}
+		final String header = req.getParameter("header");
+		if (header == null) {
+			writer.write(JsonUtils.generateError("No header given, but is mandatory").toJSONString());
+			return;
+		}
+
+		// TODO: optional attributes
+
+		// we've come so far, finally just store it
+		final Fragment fragment = new Fragment(header, text);
+		if (id != null) {
+			fragment.setId(id);
+		}
+
+		final Fragment storedFragment = fragmentManager.store(fragment);
+		writer.write(JsonUtils.generateResult(JsonUtils.toJson(storedFragment)).toJSONString());
 	}
 
 	private void handleFragment(final FragmentManager fragmentManager, final PrintWriter writer, final String idParam,
