@@ -43,10 +43,11 @@ public class MemoryFragmentManager implements FragmentManager {
 		synchronized (fragments) {
 			if (id == 0) {
 				id = nextId;
+				fragment.setId(id);
 				nextId++;
 			}
 
-			fragments.put(nextId, fragment);
+			fragments.put(id, fragment);
 		}
 
 		return get(id);
