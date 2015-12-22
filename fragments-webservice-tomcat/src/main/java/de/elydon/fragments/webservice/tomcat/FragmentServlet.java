@@ -75,6 +75,12 @@ public class FragmentServlet extends HttpServlet {
 
 			return;
 		}
+		
+		// all fragments
+		if (req.getParameter("all") != null) {
+			resp.addHeader("Content-Type", "application/json");
+			writer.write(JsonUtils.generateResult(JsonUtils.toJson(fragmentManager.getAll())).toJSONString());
+		}
 	}
 
 	private void handleFragment(final FragmentManager fragmentManager, final PrintWriter writer, final String idParam,
