@@ -7,6 +7,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 
@@ -84,10 +86,20 @@ public class TomcatRunnable implements Runnable {
 					// extract webapp name
 					String webappName = file.getFileName().toString();
 					webappName = webappName.substring(0, webappName.length() - ".war".length());
+					if (webappName.startsWith("fragments-")) {
+						webappName = webappName.substring("fragments-".length());
+					}
+					webappName = webappName.replace("-tomcat", "");
+					final Pattern pattern = Pattern.compile("(.*?)-\\d.*");
+					final Matcher matcher = pattern.matcher(webappName);
+					if (matcher.matches()) {
+						webappName = matcher.group(1);
+					}
+					webappName = "/" + webappName;
 
 					try {
 						System.out.println("deploying " + webappName + " [" + filename + "]");
-						final Context context = tomcat.addWebapp("/" + webappName, filename);
+						final Context context = tomcat.addWebapp(webappName, filename);
 
 						// i am not very happy with this, but it seems to be
 						// necessary to not lose our Main class, which holds the
