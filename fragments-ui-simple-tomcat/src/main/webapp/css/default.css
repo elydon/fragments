@@ -1,0 +1,23 @@
+html {
+	box-sizing: border-box;
+}
+
+*, *:before, *:after {
+	box-sizing: inherit;
+}
+
+body {
+	font-family: 'Roboto', sans-serif;
+}
+
+#fragment {
+	margin: 3rem auto 0;
+	width: 50%;
+	padding: 1em;
+	border: 1px solid #ddd;
+	background: #f0f8ff;
+}
+
+#fragment h1 {
+	margin-bottom: 1rem;
+}
