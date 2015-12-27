@@ -1,6 +1,12 @@
 (function(ns, ajax) {
 	"use strict";
 	
+	var container = document.getElementById('fragment'),
+		form = document.getElementById('fragment-form'),
+		formButton = document.getElementById('fragment-form-button'),
+		formShown = false
+		;
+	
 	ns.Fragment = {
 		show: function(fragment) {
 			if (typeof fragment != 'object') {
@@ -14,7 +20,7 @@
 					}
 				});
 			} else {
-				var container = document.getElementById('fragment');
+				// clear
 				container.innerHTML = '';
 				
 				// header
@@ -34,5 +40,17 @@
 	
 	document.addEventListener('DOMContentLoaded', function () {
 		ns.Fragment.show(1);
+		
+		formButton.addEventListener('click', function() {
+			if (formShown) {
+				formButton.textContent = '+';
+				form.style.display = 'none';
+			} else {
+				formButton.textContent = 'x';
+				form.style.display = 'block';
+			}
+			
+			formShown = !formShown;
+		}, false);
 	}, false);
 })(window, window.Ajax);
