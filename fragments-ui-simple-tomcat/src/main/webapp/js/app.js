@@ -1,11 +1,12 @@
-(function(ns, ajax) {
+(function(ns, ajax, utils) {
 	"use strict";
 	
 	var container = document.getElementById('fragment'),
 		form = document.getElementById('fragment-form'),
 		formButton = document.getElementById('fragment-form-button'),
 		formShown = false,
-		layer = document.getElementById('layer')
+		layer = document.getElementById('layer'),
+		saveButton = document.getElementById('fragment-form-save')
 		;
 	
 	ns.Fragment = {
@@ -57,5 +58,19 @@
 			
 			formShown = !formShown;
 		}, false);
+		
+		saveButton.addEventListener('click', function(e) {
+			e.preventDefault();
+			
+			ajax.request({
+				url: '/webservice/fragments.service',
+				data: utils.serialize(form.getElementsByTagName('form')[0]),
+				method: 'POST',
+				success: function(xmlHttp) {
+					var json = JSON.parse(xmlHttp.responseText);
+						ns.Fragment.show(json.result);
+				}
+			});
+		}, false);
 	}, false);
-})(window, window.Ajax);
+})(window, window.Ajax, window.Utils);
