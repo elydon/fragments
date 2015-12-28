@@ -39,13 +39,9 @@
 				
 				// TODO: optional attributes
 			}
-		}
-	};
-	
-	document.addEventListener('DOMContentLoaded', function () {
-		ns.Fragment.show(1);
+		},
 		
-		formButton.addEventListener('click', function() {
+		toggleForm: function() {
 			if (formShown) {
 				formButton.textContent = '+';
 				form.style.display = 'none';
@@ -59,6 +55,14 @@
 			}
 			
 			formShown = !formShown;
+		}
+	};
+	
+	document.addEventListener('DOMContentLoaded', function () {
+		ns.Fragment.show(1);
+		
+		formButton.addEventListener('click', function() {
+			ns.Fragment.toggleForm();
 		}, false);
 		
 		saveButton.addEventListener('click', function(e) {
