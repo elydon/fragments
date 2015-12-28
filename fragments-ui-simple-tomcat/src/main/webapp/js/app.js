@@ -55,6 +55,16 @@
 			}
 			
 			formShown = !formShown;
+		},
+		
+		clearForm: function() {
+			var i,
+				elements = form.querySelectorAll('input[type="text"],textarea')
+				;
+			
+			for (i = 0; i < elements.length; i++) {
+				elements[i].value = '';
+			}
 		}
 	};
 	
@@ -76,6 +86,8 @@
 					var json = JSON.parse(xmlHttp.responseText);
 					if (json.status === 'okay') {
 						ns.Fragment.show(json.result);
+						ns.Fragment.toggleForm();
+						ns.Fragment.clearForm();
 					}
 				}
 			});
