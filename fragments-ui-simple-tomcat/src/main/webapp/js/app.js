@@ -4,7 +4,8 @@
 	var container = document.getElementById('fragment'),
 		form = document.getElementById('fragment-form'),
 		formButton = document.getElementById('fragment-form-button'),
-		formShown = false
+		formShown = false,
+		layer = document.getElementById('layer')
 		;
 	
 	ns.Fragment = {
@@ -45,9 +46,13 @@
 			if (formShown) {
 				formButton.textContent = '+';
 				form.style.display = 'none';
+				layer.style.display = 'none';
+				layer.style.zIndex = '-10';
 			} else {
 				formButton.textContent = 'x';
 				form.style.display = 'block';
+				layer.style.display = 'block';
+				layer.style.zIndex = '5';
 			}
 			
 			formShown = !formShown;
