@@ -135,6 +135,11 @@ public class FragmentServlet extends HttpServlet {
 		final Fragment storedFragment = fragmentManager.store(fragment);
 		writer.write(JsonUtils.generateResult(JsonUtils.toJson(storedFragment)).toJSONString());
 	}
+	
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		doGet(req, resp);
+	}
 
 	private void handleFragment(final FragmentManager fragmentManager, final PrintWriter writer, final String idParam,
 			final Consumer<Fragment> consumer) {
