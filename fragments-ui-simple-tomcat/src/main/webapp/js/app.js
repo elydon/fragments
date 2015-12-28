@@ -18,7 +18,9 @@
 					success: function(xmlHttp) {
 						// parse the fragment object and call the show() function again
 						var json = JSON.parse(xmlHttp.responseText);
-						ns.Fragment.show(json.result);
+						if (json.status === 'okay') {
+							ns.Fragment.show(json.result);
+						}
 					}
 				});
 			} else {
@@ -68,7 +70,9 @@
 				method: 'POST',
 				success: function(xmlHttp) {
 					var json = JSON.parse(xmlHttp.responseText);
+					if (json.status === 'okay') {
 						ns.Fragment.show(json.result);
+					}
 				}
 			});
 		}, false);
