@@ -116,12 +116,12 @@ public class FragmentServlet extends HttpServlet {
 		}
 
 		final String text = req.getParameter("text");
-		if (text == null) {
+		if (text == null || text.trim().isEmpty()) {
 			writer.write(JsonUtils.generateError("No text given, but is mandatory").toJSONString());
 			return;
 		}
 		final String header = req.getParameter("header");
-		if (header == null) {
+		if (header == null || header.trim().isEmpty()) {
 			writer.write(JsonUtils.generateError("No header given, but is mandatory").toJSONString());
 			return;
 		}
