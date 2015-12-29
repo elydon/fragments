@@ -37,7 +37,12 @@
 				text.innerHTML = fragment.text;
 				container.appendChild(text);
 				
-				// TODO: optional attributes
+				// source
+				var source = document.createElement('div');
+				source.innerHTML = '<a href="' + fragment.source + '">' + fragment.source + '</a>';
+				container.appendChild(source);
+				
+				// TODO: optional attribute: image
 			}
 		},
 		
@@ -59,7 +64,7 @@
 		
 		clearForm: function() {
 			var i,
-				elements = form.querySelectorAll('input[type="text"],textarea')
+				elements = form.querySelectorAll('input[type="text"],input[type="url"],textarea')
 				;
 			
 			for (i = 0; i < elements.length; i++) {

@@ -22,6 +22,13 @@ body {
 	margin-bottom: 1rem;
 }
 
+#fragment div+div {
+	margin-top: 1.3rem;
+	padding-top: 0.5rem;
+	font-size: 0.6rem;
+	border-top: 1px solid #ddd;
+}
+
 #fragment-form {
 	width: 50%;
 	position: absolute;

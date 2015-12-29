@@ -2,6 +2,8 @@ package de.elydon.fragments.webservice.tomcat;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -123,14 +125,38 @@ public class FragmentServlet extends HttpServlet {
 			writer.write(JsonUtils.generateError("No header given, but is mandatory").toJSONString());
 			return;
 		}
-
-		// TODO: optional attributes
+		URL sourceURL = null;
+		final String source = req.getParameter("source");
+		if (source != null) {
+			try {
+				sourceURL = new URL(source);
+			} catch (final MalformedURLException e) {
+				// try with http://
+				try {
+					sourceURL = new URL("http://" + source);
+				} catch (final MalformedURLException e1) {
+					writer.write(JsonUtils.generateError("Source URL is malformed").toJSONString());
+					return;
+				}
+			}
+		}
+		if (sourceURL != null) {
+			try {
+				sourceURL.openConnection().getInputStream();
+			} catch (final IOException e) {
+				writer.write(JsonUtils.generateError("Cannot reach source URL: " + sourceURL).toJSONString());
+				return;
+			}
+		}
+		
+		// TODO: optional attribute: image
 
 		// we've come so far, finally just store it
 		final Fragment fragment = new Fragment(header, text);
 		if (id != null) {
 			fragment.setId(id);
 		}
+		fragment.setSource(sourceURL);
 
 		final Fragment storedFragment = fragmentManager.store(fragment);
 		writer.write(JsonUtils.generateResult(JsonUtils.toJson(storedFragment)).toJSONString());
