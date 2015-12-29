@@ -41,6 +41,11 @@ body {
 	display: none;
 }
 
+#fragment-form-error {
+	color: #f00;
+	font-weight: bold;
+}
+
 #fragment-form label, #fragment-form input, #fragment-form textarea {
 	display: block;
 	width: 100%;

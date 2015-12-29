@@ -3,6 +3,7 @@
 	
 	var container = document.getElementById('fragment'),
 		form = document.getElementById('fragment-form'),
+		formError = document.getElementById('fragment-form-error'),
 		formButton = document.getElementById('fragment-form-button'),
 		formShown = false,
 		layer = document.getElementById('layer'),
@@ -70,6 +71,9 @@
 			for (i = 0; i < elements.length; i++) {
 				elements[i].value = '';
 			}
+			
+			formError.textContent = '';
+			formError.style.display = 'none';
 		}
 	};
 	
@@ -93,6 +97,9 @@
 						ns.Fragment.show(json.result);
 						ns.Fragment.toggleForm();
 						ns.Fragment.clearForm();
+					} else {
+						formError.textContent = json.message;
+						formError.style.display = 'block';
 					}
 				}
 			});
