@@ -97,6 +97,22 @@ body {
 
 #fragment-form-image-preview {
 	display: none;
+	position: relative;
+}
+#fragment-form-image-preview img {
+	max-width: 100%;
+}
+#fragment-form-image-preview a {
+	position: absolute;
+	top: 0;
+	right: 0;
+	padding: 0.2rem;
+	background: #f00;
+	cursor: pointer;
+	display: none;
+}
+#fragment-form-image-preview:hover a {
+	display: block;
 }
 #fragment-form-image-progressbar {
 	border: 1px solid #ccc;

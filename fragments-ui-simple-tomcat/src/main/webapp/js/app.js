@@ -10,7 +10,8 @@
 		saveButton = document.getElementById('fragment-form-save'),
 		imageUploadProgressBarContainer = document.getElementById('fragment-form-image-progressbar'),
 		imageUploadProgressBar = document.getElementById('progress'),
-		imageUploadFile = document.getElementById('fragment-form-image')
+		imageUploadFile = document.getElementById('fragment-form-image'),
+		imagePreview = document.getElementById('fragment-form-image-preview')
 		;
 	
 	ns.Fragment = {
@@ -77,6 +78,7 @@
 			
 			formError.textContent = '';
 			formError.style.display = 'none';
+			imagePreview.style.display = 'none';
 		}
 	};
 	
@@ -99,7 +101,9 @@
 					// TODO: enable form
 					
 					if (json.status === 'okay') {
-						console.log(json.result.key);
+						imagePreview.querySelector('img').src = '/webservice/images.service?key=' + json.result.key;
+						imagePreview.querySelector('input').value = json.result.key;
+						imagePreview.style.display = 'block';
 					} else {
 						formError.textContent = json.message;
 						formError.style.display = 'block';
