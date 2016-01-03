@@ -7,7 +7,10 @@
 		formButton = document.getElementById('fragment-form-button'),
 		formShown = false,
 		layer = document.getElementById('layer'),
-		saveButton = document.getElementById('fragment-form-save')
+		saveButton = document.getElementById('fragment-form-save'),
+		imageUploadProgressBarContainer = document.getElementById('fragment-form-image-progressbar'),
+		imageUploadProgressBar = document.getElementById('progress'),
+		imageUploadFile = document.getElementById('fragment-form-image')
 		;
 	
 	ns.Fragment = {
@@ -65,7 +68,7 @@
 		
 		clearForm: function() {
 			var i,
-				elements = form.querySelectorAll('input[type="text"],input[type="url"],textarea')
+				elements = form.querySelectorAll('input[type="text"],input[type="url"],input[type="hidden"],input[type="file"],textarea')
 				;
 			
 			for (i = 0; i < elements.length; i++) {
@@ -83,6 +86,27 @@
 		formButton.addEventListener('click', function() {
 			ns.Fragment.toggleForm();
 		}, false);
+		
+		imageUploadFile.addEventListener('change', function() {
+			imageUploadProgressBarContainer.style.display = 'block';
+			// TODO: disable form
+			ajax.upload(imageUploadFile, {
+				url: '/webservice/images.service',
+				method: 'POST',
+				success: function(xmlHttp) {
+					var json = JSON.parse(xmlHttp.responseText);
+					imageUploadProgressBarContainer.style.display = 'none';
+					// TODO: enable form
+					
+					if (json.status === 'okay') {
+						console.log(json.result.key);
+					} else {
+						formError.textContent = json.message;
+						formError.style.display = 'block';
+					}
+				}
+			}, imageUploadProgressBar);
+		});
 		
 		saveButton.addEventListener('click', function(e) {
 			e.preventDefault();

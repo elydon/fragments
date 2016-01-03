@@ -95,6 +95,20 @@ body {
 	cursor: pointer;
 }
 
+#fragment-form-image-preview {
+	display: none;
+}
+#fragment-form-image-progressbar {
+	border: 1px solid #ccc;
+	padding: 0.2rem;
+	height: 1rem;
+	display: none;
+}
+#progress {
+	background: #6495ed;
+	height: 0.5rem;
+}
+
 #layer {
 	position: absolute;
 	top: 0;
