@@ -90,26 +90,33 @@
 		}, false);
 		
 		imageUploadFile.addEventListener('change', function() {
-			imageUploadProgressBarContainer.style.display = 'block';
-			// TODO: disable form
-			ajax.upload(imageUploadFile, {
-				url: '/webservice/images.service',
-				method: 'POST',
-				success: function(xmlHttp) {
-					var json = JSON.parse(xmlHttp.responseText);
-					imageUploadProgressBarContainer.style.display = 'none';
-					// TODO: enable form
-					
-					if (json.status === 'okay') {
-						imagePreview.querySelector('img').src = '/webservice/images.service?key=' + json.result.key;
-						imagePreview.querySelector('input').value = json.result.key;
-						imagePreview.style.display = 'block';
-					} else {
-						formError.textContent = json.message;
-						formError.style.display = 'block';
+			if (imageUploadFile.value != '') {
+				imageUploadProgressBarContainer.style.display = 'block';
+				// TODO: disable form
+				ajax.upload(imageUploadFile, {
+					url: '/webservice/images.service',
+					method: 'POST',
+					success: function(xmlHttp) {
+						var json = JSON.parse(xmlHttp.responseText);
+						imageUploadProgressBarContainer.style.display = 'none';
+						// TODO: enable form
+						
+						if (json.status === 'okay') {
+							imagePreview.querySelector('img').src = '/webservice/images.service?key=' + json.result.key;
+							imagePreview.querySelector('input').value = json.result.key;
+							imagePreview.style.display = 'block';
+						} else {
+							formError.textContent = json.message;
+							formError.style.display = 'block';
+						}
 					}
-				}
-			}, imageUploadProgressBar);
+				}, imageUploadProgressBar);
+			}
+		});
+		imagePreview.querySelector('a').addEventListener('click', function() {
+			imageUploadFile.value = '';
+			imagePreview.querySelector('input').value = '';
+			imagePreview.style.display = 'none';
 		});
 		
 		saveButton.addEventListener('click', function(e) {
