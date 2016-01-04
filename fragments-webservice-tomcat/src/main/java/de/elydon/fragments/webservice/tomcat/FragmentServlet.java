@@ -111,6 +111,7 @@ public class FragmentServlet extends HttpServlet {
 			try {
 				id = Long.valueOf(storeId);
 			} catch (final NumberFormatException e) {
+				resp.addHeader("Content-Type", "application/json");
 				writer.write(JsonUtils.generateError("ID is not valid: " + storeId).toJSONString());
 				return;
 			}
@@ -118,11 +119,13 @@ public class FragmentServlet extends HttpServlet {
 
 		final String text = req.getParameter("text");
 		if (text == null || text.trim().isEmpty()) {
+			resp.addHeader("Content-Type", "application/json");
 			writer.write(JsonUtils.generateError("No text given, but is mandatory").toJSONString());
 			return;
 		}
 		final String header = req.getParameter("header");
 		if (header == null || header.trim().isEmpty()) {
+			resp.addHeader("Content-Type", "application/json");
 			writer.write(JsonUtils.generateError("No header given, but is mandatory").toJSONString());
 			return;
 		}
@@ -138,6 +141,7 @@ public class FragmentServlet extends HttpServlet {
 				try {
 					sourceURL = new URL("http://" + source);
 				} catch (final MalformedURLException e1) {
+					resp.addHeader("Content-Type", "application/json");
 					writer.write(JsonUtils.generateError("Source URL is malformed").toJSONString());
 					return;
 				}
@@ -168,6 +172,7 @@ public class FragmentServlet extends HttpServlet {
 		fragment.setImage(image);
 
 		final Fragment storedFragment = fragmentManager.store(fragment);
+		resp.addHeader("Content-Type", "application/json");
 		writer.write(JsonUtils.generateResult(JsonUtils.toJson(storedFragment)).toJSONString());
 	}
 	
