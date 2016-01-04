@@ -1,5 +1,6 @@
 package de.elydon.fragments.webservice.tomcat;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
@@ -125,9 +126,11 @@ public class FragmentServlet extends HttpServlet {
 			writer.write(JsonUtils.generateError("No header given, but is mandatory").toJSONString());
 			return;
 		}
+		
+		// optional attribute: source URL
 		URL sourceURL = null;
 		final String source = req.getParameter("source");
-		if (source != null) {
+		if (source != null && !source.isEmpty()) {
 			try {
 				sourceURL = new URL(source);
 			} catch (final MalformedURLException e) {
@@ -149,7 +152,12 @@ public class FragmentServlet extends HttpServlet {
 			}
 		}
 		
-		// TODO: optional attribute: image
+		// optional attribute: image
+		BufferedImage image = null;
+		final String imageKey = req.getParameter("filekey");
+		if (imageKey != null && !imageKey.isEmpty()) {
+			image = ImageServlet.getImage(imageKey);
+		}
 
 		// we've come so far, finally just store it
 		final Fragment fragment = new Fragment(header, text);
@@ -157,6 +165,7 @@ public class FragmentServlet extends HttpServlet {
 			fragment.setId(id);
 		}
 		fragment.setSource(sourceURL);
+		fragment.setImage(image);
 
 		final Fragment storedFragment = fragmentManager.store(fragment);
 		writer.write(JsonUtils.generateResult(JsonUtils.toJson(storedFragment)).toJSONString());

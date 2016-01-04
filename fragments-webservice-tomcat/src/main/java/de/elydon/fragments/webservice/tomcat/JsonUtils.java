@@ -63,9 +63,12 @@ public final class JsonUtils {
 		result.put("id", fragment.getId());
 		result.put("header", fragment.getHeader());
 		result.put("text", fragment.getText());
-		result.put("source", fragment.getSource().toString());
-
-		// TODO: optional attribute: image
+		if (fragment.getSource() != null) {
+			result.put("source", fragment.getSource().toString());
+		}
+		if (fragment.getImage() != null) {
+			result.put("image", ImageServlet.computeKey(fragment.getImage()));
+		}
 
 		return result;
 	}

@@ -10,6 +10,14 @@ body {
 	font-family: 'Roboto', sans-serif;
 }
 
+.clear:before, .clear:after {
+	content: " ";
+	display: table;
+}
+.clear:after {
+	clear: both;
+}
+
 #fragment {
 	margin: 3rem auto 0;
 	width: 50%;
@@ -19,6 +27,13 @@ body {
 }
 
 #fragment h1 {
+	margin-bottom: 1rem;
+}
+
+#fragment img {
+	float: left;
+	max-width: 33%;
+	margin-right: 1rem;
 	margin-bottom: 1rem;
 }
 

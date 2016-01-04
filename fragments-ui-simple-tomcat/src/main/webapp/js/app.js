@@ -37,17 +37,24 @@
 				header.textContent = fragment.header;
 				container.appendChild(header);
 				
+				// optional attribute: image
+				var image = '';
+				if (typeof fragment.image != 'undefined') {
+					image = '<img src="/webservice/images.service?key=' + fragment.image + '" />';
+				}
+				
 				// text
 				var text = document.createElement('div');
-				text.innerHTML = fragment.text;
+				text.className = 'clear';
+				text.innerHTML = image + fragment.text;
 				container.appendChild(text);
 				
-				// source
-				var source = document.createElement('div');
-				source.innerHTML = '<a href="' + fragment.source + '">' + fragment.source + '</a>';
-				container.appendChild(source);
-				
-				// TODO: optional attribute: image
+				// optional attribute: source URL
+				if (typeof fragment.source != 'undefined') {
+					var source = document.createElement('div');
+					source.innerHTML = '<a href="' + fragment.source + '">' + fragment.source + '</a>';
+					container.appendChild(source);
+				}
 			}
 		},
 		

@@ -20,6 +20,9 @@
 			}
 			
 			xmlHttp.open(options.method ? options.method : "GET", options.url, true);
+			if (options.method === 'POST' && typeof options.progress == 'undefined') {
+				xmlHttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+			}
 			xmlHttp.send(options.data);
 		},
 		

@@ -1,6 +1,7 @@
 package de.elydon.fragments.webservice.tomcat;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
@@ -44,7 +45,7 @@ public class ImageServlet extends HttpServlet {
 			throws ServletException, IOException {
 		final String key = req.getParameter("key");
 		if (key != null) {
-			final BufferedImage image = getImage(key, false);
+			final BufferedImage image = getImage(key);
 			if (image != null) {
 				resp.addHeader("Content-Type", "image/png");
 				ImageIO.write(image, "png", resp.getOutputStream());
@@ -67,7 +68,7 @@ public class ImageServlet extends HttpServlet {
 					if (!item.isFormField()) {
 						// save image
 						final BufferedImage image = ImageIO.read(item.getInputStream());
-						final String sha = DigestUtils.sha256Hex(item.getInputStream());
+						final String sha = computeKey(image);
 						synchronized (images) {
 							images.put(sha, image);
 						}
@@ -88,16 +89,17 @@ public class ImageServlet extends HttpServlet {
 	}
 	
 	public static BufferedImage getImage(final String key) {
-		return getImage(key, true);
-	}
-
-	public static BufferedImage getImage(final String key, final boolean remove) {
 		synchronized (images) {
-			final BufferedImage image = images.get(key);
-			if (remove) {
-				images.remove(key);
-			}
-			return image;
+			return images.get(key);
+		}
+	}
+	
+	public static String computeKey(final BufferedImage image) {
+		try (final ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+			ImageIO.write(image, "png", os);
+			return DigestUtils.sha256Hex(os.toByteArray());
+		} catch (final IOException e) {
+			throw new IllegalStateException("Unable to compute SHA256 of image", e);
 		}
 	}
 
