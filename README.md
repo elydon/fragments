@@ -8,8 +8,31 @@ A fragment consists of the following parts:
 
 ## project layout
 
-The fragment itself and a manager that is responsible to store and retrieve fragments are contained in the `fragments-core` project, but only as interfaces. Other projects will implement these interfaces, and can be combined to get a fully working system.
-This way it is possible to have different UIs for displaying fragments or different layers to persist fragments (or even just put them into memory, losing everything once the system stops).
+The whole system consists of several projects, which can be combined to get a running application. The most important project is `fragments-core`, which contains the main classes of a fragments system:
+* The `Main` class (including the main method)
+* The `Fragment` class
+* The `FragmentManager` interface
+* The `Application` interface
+
+When starting the system via running the main method of the `Main` class, the class path is scanned for a class that implements the `Application` interface, which gets instantiated and its `setup()` method is called. The `Application` is responsible for setting up the fragments system. It is implementation dependent how the various components get assembled to a whole fragments system, but usually it is needed to configure the class path in a way the JVM finds all necessary classes. The `SimpleApplication` class is a good starting point for your own implementation of an `Application`.
+
+Now let's take a closer look on the other projects.
+
+#### fragments-application-simple-tomcat
+
+Offers an implementation of `Application` that starts an embedded Tomcat. All WAR archives on the current path get deployed as web applications. As stated above, the JAR file of this project has to be in the class path of the JVM when calling the main method.
+
+#### fragments-store-memory
+
+A very simple implementation of the `FragmentManager` that stores each and every fragment in memory. After shutting down the fragments system, all fragments are lost. Useful in development phase to always have a clean system after startup.
+
+#### fragments-webservice-tomcat
+
+A WAR archive that can be run by `fragments-application-simple-tomcat`. It offers a simple web interface to interact with the `FragmentManager` of the system. Images of the fragments are handled by `ImageServlet` and all fragment related stuff by `FragmentServlet`.
+
+#### fragments-ui-simple-tomcat
+
+A WAR archive that offers a very simple and minimalistic web GUI to manage fragments, which uses the web interface of `fragments-webservice-tomcat` under the hood.
 
 ## okay, fine ... but why?
 
