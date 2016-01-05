@@ -14,7 +14,7 @@ The whole system consists of several projects, which can be combined to get a ru
 * The `FragmentManager` interface
 * The `Application` interface
 
-When starting the system via running the main method of the `Main` class, the class path is scanned for a class that implements the `Application` interface, which gets instantiated and its `setup()` method is called. The `Application` is responsible for setting up the fragments system. It is implementation dependent how the various components get assembled to a whole fragments system, but usually it is needed to configure the class path in a way the JVM finds all necessary classes. The `SimpleApplication` class is a good starting point for your own implementation of an `Application`.
+When starting the system via running the main method of the `Main` class, the class path (or the current path, if the class path root cannot be found) is scanned for a class that implements the `Application` interface, which gets instantiated and its `setup()` method is called. The `Application` is responsible for setting up the fragments system. It is implementation dependent how the various components get assembled to a whole fragments system, but usually it is needed to configure the class path in a way the JVM finds all necessary classes. The `SimpleApplication` class is a good starting point for your own implementation of an `Application`.
 
 Now let's take a closer look on the other projects.
 
@@ -33,6 +33,24 @@ A WAR archive that can be run by `fragments-application-simple-tomcat`. It offer
 #### fragments-ui-simple-tomcat
 
 A WAR archive that offers a very simple and minimalistic web GUI to manage fragments, which uses the web interface of `fragments-webservice-tomcat` under the hood.
+
+## setting up a simple fragments system
+
+To get a very simple fragments system up and running, you have to build several projects (I am assuming you know how to build with gradle):
+* JAR files of 
+  * `fragments-core`
+  * `fragments-application-simple-tomcat`
+  * `fragments-store-memory`
+* WAR files of
+  * `fragments-webservice-tomcat`
+  * `fragments-ui-simple-tomcat`
+
+Throw all files in a single directory and type (watch the version):
+```shell
+java -jar fragments-core-1.0.0-SNAPSHOT.jar
+```
+
+This will start the embedded Tomcat as application and take the `MemoryFragmentManager` as the `FragmentManager`. After successfully launching the application, you can open a browser and head over to `http://localhost:8080/ui-simple` ... and enjoy!
 
 ## okay, fine ... but why?
 
