@@ -1,1 +1,7 @@
 version = '1.0.0-SNAPSHOT'
+
+jar {
+	manifest {
+		attributes 'Main-Class': 'de.elydon.fragments.core.Main'
+	}
+}

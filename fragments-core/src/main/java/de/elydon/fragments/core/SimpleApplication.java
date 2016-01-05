@@ -3,6 +3,7 @@ package de.elydon.fragments.core;
 import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,10 +42,22 @@ public abstract class SimpleApplication implements Application {
 	 *             instantiated
 	 */
 	protected void setupFragmentManager(final ClassLoader classLoader) {
+		// resolve root path
+		Path rootPath;
+		try {
+			rootPath = Paths.get(classLoader.getResource(".").toURI());
+		} catch (final URISyntaxException e) {
+			throw new IllegalStateException("Unable to scan for " + FragmentManager.class.getCanonicalName(), e);
+		} catch (final NullPointerException e) {
+			rootPath = Paths.get(".");
+		}
+		rootPath = rootPath.toAbsolutePath();
+		
+		// scan for the fragment manager
 		try {
 			final Map<Class<?>, URL> fragmentManagerClasses = ClassScanner.scan(classLoader,
 					new ImplementingClassFilter(FragmentManager.class),
-					Paths.get(classLoader.getResource(".").toURI()));
+					rootPath);
 			if (fragmentManagerClasses.isEmpty()) {
 				throw new IllegalStateException(
 						"Found no class implementing " + FragmentManager.class.getCanonicalName());
@@ -57,8 +70,6 @@ public abstract class SimpleApplication implements Application {
 			final FragmentManager fragmentManager = (FragmentManager) fragmentManagerClasses.keySet().iterator().next()
 					.newInstance();
 			addObjectSource(FragmentManager.class, () -> fragmentManager);
-		} catch (final URISyntaxException e) {
-			throw new IllegalStateException("Unable to scan for " + FragmentManager.class.getCanonicalName(), e);
 		} catch (final IllegalAccessException | InstantiationException e) {
 			throw new IllegalStateException(
 					"Unable to instantiate an object for " + FragmentManager.class.getCanonicalName(), e);

@@ -13,10 +13,10 @@ import java.util.Map;
  * Main class of fragments. Starts the {@link Application}.
  * </p>
  * <p>
- * The class path will be scanned for a class that implements
- * {@link Application}. The main class instantiates an object (it needs a
- * parameter-less constructor) of the application and calls
- * {@link Application#setup() setup}.
+ * The class path (or the current directory, if no class path root is found)
+ * will be scanned for a class that implements {@link Application}. The main
+ * class instantiates an object (it needs a parameter-less constructor) of the
+ * application and calls {@link Application#setup() setup}.
  * </p>
  * <p>
  * If not exactly one class implementing {@link Application} is found, the
@@ -54,7 +54,13 @@ public class Main {
 			// return needed to satisfy compiler ... otherwise the variable is
 			// not initialized :/
 			return;
+		} catch (final NullPointerException e) {
+			System.out.println("Class path root cannot be found, taking current directory");
+			classPathRoot = Paths.get(".");
 		}
+		classPathRoot = classPathRoot.toAbsolutePath();
+		System.out.println("root: " + classPathRoot);
+
 		final Map<Class<?>, URL> applicationClasses = ClassScanner.scan(Main.class.getClassLoader(),
 				new ImplementingClassFilter(Application.class), classPathRoot);
 		if (applicationClasses.isEmpty()) {
@@ -68,21 +74,24 @@ public class Main {
 			System.err.println("Cannot decide which one to use, exiting");
 			System.exit(1);
 		}
-		
+
 		// construct proper class loader to load the application class
-		// this is necessary, as they probably want to load other stuff from the class path
+		// this is necessary, as they probably want to load other stuff from the
+		// class path
 		ClassLoader classLoader = Main.class.getClassLoader();
 		URL url = null;
 		Class<Application> applicationClass = null;
 		for (final Map.Entry<Class<?>, URL> entry : applicationClasses.entrySet()) {
 			applicationClass = (Class<Application>) entry.getKey();
 			url = entry.getValue();
-			// no break necessary, we only have one value, see if statements above
+			// no break necessary, we only have one value, see if statements
+			// above
 		}
 		if (url != null) {
 			classLoader = new URLClassLoader(new URL[] { url }, classLoader);
-			
-			// we have to reload the class with the "right" class loader, otherwise the
+
+			// we have to reload the class with the "right" class loader,
+			// otherwise the
 			// class loader of the Main class will be used
 			try {
 				applicationClass = (Class<Application>) classLoader.loadClass(applicationClass.getCanonicalName());
@@ -93,7 +102,9 @@ public class Main {
 		}
 
 		try {
+			System.out.println("Instantiating application: " + applicationClass.getCanonicalName());
 			application = applicationClass.newInstance();
+			System.out.println("Setting up application");
 			final Thread applicationThread = application.setup();
 			if (applicationThread == null) {
 				throw new IllegalStateException("Thread of the application is null");
@@ -103,7 +114,7 @@ public class Main {
 			if (!applicationThread.isAlive()) {
 				applicationThread.start();
 			}
-			
+
 			// wait until the application thread is dead
 			applicationThread.join();
 		} catch (final ClassNotFoundException | InstantiationException | IllegalAccessException e) {
