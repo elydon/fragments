@@ -39,15 +39,14 @@ public class FragmentServlet extends HttpServlet {
 		// fetch the FragmentManager of the system
 		final Application application = Main.getApplication();
 		final FragmentManager fragmentManager = application.get(FragmentManager.class);
+		// IE may not be able to handle this .. screw you, IE, learn to be a
+		// browser (calling before getting the writer to ensure the encoding gets passed)
+		resp.addHeader("Content-Type", "application/json;charset=UTF8");
 		final PrintWriter writer = resp.getWriter();
 
 		// fetching ID
 		final String idParam = req.getParameter("id");
 		if (idParam != null) {
-			// IE may not be able to handle this .. screw you, IE, learn to be a
-			// browser
-			resp.addHeader("Content-Type", "application/json");
-
 			handleFragment(fragmentManager, writer, idParam, (fragment) -> {
 				writer.write(JsonUtils.generateResult(JsonUtils.toJson(fragment)).toJSONString());
 			});
@@ -59,18 +58,13 @@ public class FragmentServlet extends HttpServlet {
 		final String search = req.getParameter("search");
 		if (search != null) {
 			final List<Fragment> foundFragments = fragmentManager.search(search);
-
-			resp.addHeader("Content-Type", "application/json");
 			writer.write(JsonUtils.generateResult(JsonUtils.toJson(foundFragments)).toJSONString());
-
 			return;
 		}
 
 		// related items
 		final String relatedToParam = req.getParameter("relatedTo");
 		if (relatedToParam != null) {
-			resp.addHeader("Content-Type", "application/json");
-
 			handleFragment(fragmentManager, writer, relatedToParam, (fragment) -> {
 				final List<Fragment> related = fragmentManager.fetchRelated(fragment);
 				writer.write(JsonUtils.generateResult(JsonUtils.toJson(related)).toJSONString());
@@ -81,15 +75,12 @@ public class FragmentServlet extends HttpServlet {
 
 		// all fragments
 		if (req.getParameter("all") != null) {
-			resp.addHeader("Content-Type", "application/json");
 			writer.write(JsonUtils.generateResult(JsonUtils.toJson(fragmentManager.getAll())).toJSONString());
 		}
 
 		// delete fragment
 		final String deleteIdParam = req.getParameter("delete");
 		if (deleteIdParam != null) {
-			resp.addHeader("Content-Type", "application/json");
-
 			try {
 				final long id = Long.valueOf(deleteIdParam);
 				final Fragment deletedFragment = fragmentManager.delete(id);
@@ -111,7 +102,6 @@ public class FragmentServlet extends HttpServlet {
 			try {
 				id = Long.valueOf(storeId);
 			} catch (final NumberFormatException e) {
-				resp.addHeader("Content-Type", "application/json");
 				writer.write(JsonUtils.generateError("ID is not valid: " + storeId).toJSONString());
 				return;
 			}
@@ -119,13 +109,11 @@ public class FragmentServlet extends HttpServlet {
 
 		final String text = req.getParameter("text");
 		if (text == null || text.trim().isEmpty()) {
-			resp.addHeader("Content-Type", "application/json");
 			writer.write(JsonUtils.generateError("No text given, but is mandatory").toJSONString());
 			return;
 		}
 		final String header = req.getParameter("header");
 		if (header == null || header.trim().isEmpty()) {
-			resp.addHeader("Content-Type", "application/json");
 			writer.write(JsonUtils.generateError("No header given, but is mandatory").toJSONString());
 			return;
 		}
@@ -141,7 +129,6 @@ public class FragmentServlet extends HttpServlet {
 				try {
 					sourceURL = new URL("http://" + source);
 				} catch (final MalformedURLException e1) {
-					resp.addHeader("Content-Type", "application/json");
 					writer.write(JsonUtils.generateError("Source URL is malformed").toJSONString());
 					return;
 				}
@@ -172,7 +159,6 @@ public class FragmentServlet extends HttpServlet {
 		fragment.setImage(image);
 
 		final Fragment storedFragment = fragmentManager.store(fragment);
-		resp.addHeader("Content-Type", "application/json");
 		writer.write(JsonUtils.generateResult(JsonUtils.toJson(storedFragment)).toJSONString());
 	}
 	
