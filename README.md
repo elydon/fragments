@@ -2,7 +2,7 @@
 Fragments is a combination of wikipedia and twitter, as it shall consist of articles that explain and define anything you want, but its size and contents are limited. Such an article is called a fragment.
 A fragment consists of the following parts:
 * a header (mandatory, max. 100 characters)
-* a text (mandatory, max. 2000 characters)
+* a text (mandatory, max. 3000 characters)
 * an image (optional)
 * a source URL (optional)
 
@@ -33,6 +33,10 @@ A WAR archive that can be run by `fragments-application-simple-tomcat`. It offer
 #### fragments-ui-simple-tomcat
 
 A WAR archive that offers a very simple and minimalistic web GUI to manage fragments, which uses the web interface of `fragments-webservice-tomcat` under the hood.
+
+#### fragments-wikipedia-tomcat
+
+A WAR archive that let's you enter a URL of a wikipedia page and then tranforms the parts of this page into fragments.
 
 ## setting up a simple fragments system
 
