@@ -76,6 +76,7 @@ public class FragmentServlet extends HttpServlet {
 		// all fragments
 		if (req.getParameter("all") != null) {
 			writer.write(JsonUtils.generateResult(JsonUtils.toJson(fragmentManager.getAll())).toJSONString());
+			return;
 		}
 
 		// delete fragment
