@@ -6,3 +6,4 @@ includeFlat 'fragments-application-simple-tomcat'
 
 includeFlat 'fragments-webservice-tomcat'
 includeFlat 'fragments-ui-simple-tomcat'
+includeFlat 'fragments-wikipedia-tomcat'

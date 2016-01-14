@@ -1,0 +1,56 @@
+html {
+	box-sizing: border-box;
+}
+
+*, *:before, *:after {
+	box-sizing: inherit;
+}
+
+body {
+	font-family: 'Roboto', sans-serif;
+}
+
+form {
+	margin: 0 auto;
+	width: 50%;
+	padding: 3rem 1.5rem 1.5rem;
+}
+
+form-error {
+	color: #f00;
+	font-weight: bold;
+}
+
+form label, form input, form textarea {
+	display: block;
+	width: 100%;
+}
+
+form label {
+	padding-bottom: 0.2rem;
+}
+
+form input, form textarea {
+	margin-bottom: 1rem;
+	border: 1px solid #ccc;
+	padding: 0.3rem;
+}
+
+form textarea {
+	height: 5rem;
+}
+
+form input:focus, form textarea:focus {
+	border: 1px solid #6495ed;
+	box-shadow: 0 0 4px 0 #6495ed;
+	outline: 0;
+}
+
+form input[type=submit] {
+	width: 30%;
+	color: #fff;
+	background: #6495ed;
+	border: 0;
+	float: right;
+	cursor: pointer;
+}
