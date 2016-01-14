@@ -10,6 +10,11 @@ body {
 	font-family: 'Roboto', sans-serif;
 }
 
+p {
+	line-height: 1.4;
+	margin-bottom: 0.6rem;
+}
+
 .clear:before, .clear:after {
 	content: " ";
 	display: table;
