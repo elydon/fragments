@@ -8,14 +8,25 @@ import java.net.URL;
  * A fragment is a single piece of knowledge.
  * </p>
  * <p>
- * It holds a header with up to 100 characters and a text with at most 2000
- * characters, and optionally a source URL, and an image.
+ * It holds a header with up to 100 characters and a text with at most
+ * {@link #MAX_CHARS_IN_TEXT} characters, and optionally a source URL, and an
+ * image.
  * </p>
  * 
  * @author elydon
  *
  */
 public class Fragment {
+
+	/**
+	 * Maximum number of characters in the header
+	 */
+	public static final int MAX_CHARS_IN_HEADER = 100;
+
+	/**
+	 * Maximum number of characters in the text
+	 */
+	public static final int MAX_CHARS_IN_TEXT = 3000;
 
 	private long id;
 
@@ -36,7 +47,8 @@ public class Fragment {
 	 * @param text
 	 * @throws IllegalArgumentException
 	 *             If any of the arguments is {@code null} or the header exceeds
-	 *             100 characters or the text exceeds 2000 characters
+	 *             100 characters or the text exceeds {@link #MAX_CHARS_IN_TEXT}
+	 *             characters
 	 */
 	public Fragment(final String header, final String text) {
 		setHeader(header);
@@ -87,11 +99,13 @@ public class Fragment {
 	 * 
 	 * @param text
 	 * @throws IllegalArgumentException
-	 *             If the text is {@code null} or exceeds 2000 characters
+	 *             If the text is {@code null} or exceeds
+	 *             {@link #MAX_CHARS_IN_TEXT} characters
 	 */
 	public void setText(String text) {
-		if (text == null || text.length() > 2000) {
-			throw new IllegalArgumentException("Text must not be null and contain max. 2000 characters");
+		if (text == null || text.length() > MAX_CHARS_IN_TEXT) {
+			throw new IllegalArgumentException(
+					"Text must not be null and contain max. " + MAX_CHARS_IN_TEXT + " characters");
 		}
 		this.text = text;
 	}
@@ -125,11 +139,13 @@ public class Fragment {
 	 * 
 	 * @param header
 	 * @throws IllegalArgumentException
-	 *             If the header is {@code null} or exceeds 100 characters
+	 *             If the header is {@code null} or exceeds
+	 *             {@link #MAX_CHARS_IN_HEADER} characters
 	 */
 	public void setHeader(String header) {
-		if (header == null || header.length() > 100) {
-			throw new IllegalArgumentException("Header must not be null and contain max. 100 characters");
+		if (header == null || header.length() > MAX_CHARS_IN_HEADER) {
+			throw new IllegalArgumentException(
+					"Header must not be null and contain max. " + MAX_CHARS_IN_HEADER + " characters");
 		}
 		this.header = header;
 	}
